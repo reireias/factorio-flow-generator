@@ -1,8 +1,7 @@
 <template>
-  <v-layout column justify-center align-center>
-    <h1>TODO</h1>
+  <div>
     <mermaid></mermaid>
-  </v-layout>
+  </div>
 </template>
 
 <script>
