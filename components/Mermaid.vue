@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <h2>TODO: mermaid</h2>
-    <v-btn @click="update">update</v-btn>
-    <div id="mermaid" class="mermaid">{{ input }}</div>
-  </div>
+  <div id="mermaid" class="mermaid">{{ input }}</div>
 </template>
 
 <script>
@@ -37,4 +33,8 @@ export default {
 </script>
 
 <style>
+.mermaid {
+  width: 100%;
+  text-align: center;
+}
 </style>
