@@ -1,0 +1,44 @@
+{
+  "name": "factorio-flow-generator",
+  "version": "0.1.0",
+  "description": "A flow generator for factorio",
+  "author": "reireias <reireias@gmail.com>",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "test": "ava -v",
+    "watch-test": "ava --watch -v"
+  },
+  "ava": {
+    "require": "babel-register",
+    "babel": "inherit"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "deepmerge": "^2.1.0",
+    "mermaid": "^8.0.0-rc.8",
+    "node-ini": "^1.0.0",
+    "nuxt": "^1.0.0",
+    "vuetify": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2017": "^6.24.1",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-html": "^3.1.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1"
+  }
+}

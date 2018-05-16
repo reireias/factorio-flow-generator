@@ -1,0 +1,154 @@
+{
+  "A": {
+    "name": "recipe of A",
+    "category": "categoryA",
+    "products": [
+      {
+        "name": "A",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "AA",
+        "amount": 1
+      },
+      {
+        "name": "AB",
+        "amount": 1
+      }
+    ],
+    "energy": 5
+  },
+  "B": {
+    "name": "recipe of B",
+    "category": "categoryB",
+    "products": [
+      {
+        "name": "B",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "BB",
+        "amount": 2
+      }
+    ],
+    "energy": 1
+  },
+  "BB": {
+    "name": "recipe of BB",
+    "category": "categoryB",
+    "products": [
+      {
+        "name": "BB",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "BBB",
+        "amount": 2
+      }
+    ],
+    "energy": 1
+  },
+  "BBB": {
+    "name": "recipe of BBB",
+    "category": "categoryB",
+    "products": [
+      {
+        "name": "BBB",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "BBBB",
+        "amount": 2
+      }
+    ],
+    "energy": 1
+  },
+  "C": {
+    "name": "recipe of C",
+    "category": "categoryC",
+    "products": [
+      {
+        "name": "C",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "CA",
+        "amount": 2
+      },
+      {
+        "name": "CB",
+        "amount": 1
+      }
+    ],
+    "energy": 1
+  },
+  "CA": {
+    "name": "recipe of CA",
+    "category": "categoryC",
+    "products": [
+      {
+        "name": "CA",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "CB",
+        "amount": 1
+      }
+    ],
+    "energy": 1
+  },
+  "D": {
+    "name": "recipe of D",
+    "category": "categoryD",
+    "products": [
+      {
+        "name": "D",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "DA",
+        "amount": 1
+      },
+      {
+        "name": "DB",
+        "amount": 1
+      }
+    ],
+    "energy": 1
+  },
+  "DA-DB": {
+    "name": "recipe of DA and DB",
+    "category": "categoryD",
+    "products": [
+      {
+        "name": "DA",
+        "amount": 1
+      },
+      {
+        "name": "DB",
+        "amount": 1
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "DC",
+        "amount": 1
+      }
+    ],
+    "energy": 1
+  }
+}
