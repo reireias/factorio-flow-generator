@@ -42,16 +42,12 @@ export default {
     }
   },
   mounted() {
-    let flow = new FlowGenerator(Object.values(recipes))
-    let result = flow.generate('inserter', 60, true)
-    let converter = new Converter(locales)
-    let code = converter.convert(result).join('\n')
-    this.input = code
+    let container = document.getElementById('mermaid')
+    container.setAttribute('data-processed', true)
   },
   methods: {
     onClickButton() {
       if (!this.$refs.product.valid || !this.$refs.amount.valid) {
-        // TODO error message
         return
       }
       let converter = new Converter(locales)
@@ -59,18 +55,19 @@ export default {
       try {
         parsedProduct = converter.parseResource(this.product)
       } catch (e) {
-        // TODO error message
-        console.log(e)
+        this.$refs.product.rules.push((v) => e.message)
+        this.$refs.product.validate()
         return
       }
+      this.$refs.product.validate()
       let container = document.getElementById('mermaid')
 
       let flow = new FlowGenerator(Object.values(recipes))
       let result = flow.generate(parsedProduct, this.amount, true)
       let code = converter.convert(result).join('\n')
+      this.input = code
       container.removeAttribute('data-processed')
       container.innerHTML = code
-      this.input = code
       mermaid.parse(code)
       mermaid.init(null, container)
     }
