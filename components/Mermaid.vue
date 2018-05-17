@@ -1,20 +1,26 @@
 <template>
-  <v-form v-model="valid">
-    <v-layout row wrap justify-center align-center>
-      <v-flex xs3>
-        <v-text-field label="product" :rules="nameRules"></v-text-field>
-      </v-flex>
-      <v-flex xs3 offset-xs1>
-        <v-text-field label="amount/min" :rules="numberRules"></v-text-field>
-      </v-flex>
-      <v-flex xs2 offset-xs1>
-        <v-btn :disabled="!valid" @click="onClickButton">ok</v-btn>
-      </v-flex>
-      <v-flex xs12>
-        <div id="mermaid" class="mermaid">{{ input }}</div>
-      </v-flex>
-    </v-layout>
-  </v-form>
+  <v-layout row wrap justify-center align-center>
+    <v-flex xs3>
+      <v-text-field
+        label="product"
+        :rules="[rules.required]"
+        v-model="product"
+        ref="product"></v-text-field>
+    </v-flex>
+    <v-flex xs3 offset-xs1>
+      <v-text-field
+        label="amount/min"
+        :rules="[rules.required, rules.number]"
+        v-model="amount"
+        ref="amount"></v-text-field>
+    </v-flex>
+    <v-flex xs2 offset-xs1>
+      <v-btn @click="onClickButton">ok</v-btn>
+    </v-flex>
+    <v-flex xs12>
+      <div id="mermaid" class="mermaid">{{ input }}</div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -27,37 +33,46 @@ export default {
   data() {
     return {
       input: '',
-      valid: false,
-      nameRules: [
-        v => !!v || 'required'
-      ],
-      numberRules: [
-        v => !isNaN(v) || 'not a number'
-      ]
+      product: null,
+      amount: null,
+      rules: {
+        required: (v) => !!v || 'required',
+        number: (v) => !isNaN(v) || 'not a number'
+      }
     }
   },
   mounted() {
     let flow = new FlowGenerator(Object.values(recipes))
     let result = flow.generate('inserter', 60, true)
     let converter = new Converter(locales)
-    let texts = converter.convert(result)
-    console.log(texts)
-    // mermaid.initialize({})
-    this.input = texts.join('\n')
-    // let container = document.getElementById('mermaid')
-    // mermaid.init(null, container)
+    let code = converter.convert(result).join('\n')
+    this.input = code
   },
   methods: {
     onClickButton() {
-      console.log(mermaid)
-      let flow = new FlowGenerator(Object.values(recipes))
-      let result = flow.generate('inserter', 60, true)
+      if (!this.$refs.product.valid || !this.$refs.amount.valid) {
+        // TODO error message
+        return
+      }
       let converter = new Converter(locales)
-      let texts = converter.convert(result)
-      this.input = texts.join('\n')
+      let parsedProduct
+      try {
+        parsedProduct = converter.parseResource(this.product)
+      } catch (e) {
+        // TODO error message
+        console.log(e)
+        return
+      }
       let container = document.getElementById('mermaid')
+
+      let flow = new FlowGenerator(Object.values(recipes))
+      let result = flow.generate(parsedProduct, this.amount, true)
+      let code = converter.convert(result).join('\n')
+      container.removeAttribute('data-processed')
+      container.innerHTML = code
+      this.input = code
+      mermaid.parse(code)
       mermaid.init(null, container)
-      // mermaid.render('mermaid-x', this.input, () => {}, container)
     }
   }
 }
