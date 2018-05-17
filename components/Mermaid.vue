@@ -15,11 +15,11 @@
         type="number"
         ref="amount"></v-text-field>
     </v-flex>
-    <v-flex xs2 offset-xs1>
+    <v-flex xs2 offset-xs1 offset-xs2>
       <v-btn @click="onClickButton">ok</v-btn>
     </v-flex>
-    <v-flex xs12 v-if="hasDuplicated">
-      <v-btn v-for="(value, key) in duplicated" :key="key">{{ key }}</v-btn>
+    <v-flex xs2 v-if="hasDuplicated" v-for="key in duplicatedKeys" :key="key">
+      <v-select v-bind:label="key" :items="duplicatedMap[key]"></v-select>
     </v-flex>
     <v-flex xs12>
       <div id="mermaid" class="mermaid">{{ input }}</div>
@@ -41,6 +41,9 @@ export default {
       amount: null,
       hasDuplicated: false,
       duplicated: null,
+      duplicatedKeys: null,
+      duplicatedMap: null,
+      targetDuplicated: null,
       rules: {
         required: (v) => !!v || 'required',
         number: (v) => !isNaN(v) || 'not a number'
@@ -72,6 +75,11 @@ export default {
       let duplicated = {}
       let result = flow.generate(parsedProduct, this.amount, true, duplicated)
       this.duplicated = duplicated
+      this.duplicatedKeys = Object.keys(this.duplicated)
+      this.duplicatedMap = {}
+      for (let key of this.duplicatedKeys) {
+        this.duplicatedMap[key] = duplicated[key].map(v => v.name)
+      }
       this.hasDuplicated = Object.keys(this.duplicated).length > 0
       console.log(this)
       let code = converter.convert(result).join('\n')
@@ -80,6 +88,9 @@ export default {
       container.innerHTML = code
       mermaid.parse(code)
       mermaid.init(null, container)
+    },
+    onClickDuplicated(event) {
+      console.log(event)
     }
   }
 }
