@@ -11,11 +11,15 @@
       <v-text-field
         label="amount/min"
         :rules="[rules.required, rules.number]"
-        v-model="amount"
+        v-model.number="amount"
+        type="number"
         ref="amount"></v-text-field>
     </v-flex>
     <v-flex xs2 offset-xs1>
       <v-btn @click="onClickButton">ok</v-btn>
+    </v-flex>
+    <v-flex xs12 v-if="hasDuplicated">
+      <v-btn v-for="(value, key) in duplicated" :key="key">{{ key }}</v-btn>
     </v-flex>
     <v-flex xs12>
       <div id="mermaid" class="mermaid">{{ input }}</div>
@@ -35,6 +39,8 @@ export default {
       input: '',
       product: null,
       amount: null,
+      hasDuplicated: false,
+      duplicated: null,
       rules: {
         required: (v) => !!v || 'required',
         number: (v) => !isNaN(v) || 'not a number'
@@ -63,7 +69,11 @@ export default {
       let container = document.getElementById('mermaid')
 
       let flow = new FlowGenerator(Object.values(recipes))
-      let result = flow.generate(parsedProduct, this.amount, true)
+      let duplicated = {}
+      let result = flow.generate(parsedProduct, this.amount, true, duplicated)
+      this.duplicated = duplicated
+      this.hasDuplicated = Object.keys(this.duplicated).length > 0
+      console.log(this)
       let code = converter.convert(result).join('\n')
       this.input = code
       container.removeAttribute('data-processed')
