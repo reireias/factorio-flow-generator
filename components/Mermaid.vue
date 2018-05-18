@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap justify-center align-center>
+  <v-layout row wrap justify-center>
     <v-flex xs3>
       <v-text-field
         label="product"
@@ -18,11 +18,20 @@
     <v-flex xs2 offset-xs1 offset-xs2>
       <v-btn @click="onClickButton">ok</v-btn>
     </v-flex>
-    <v-flex xs2 v-if="hasDuplicated" v-for="key in duplicatedKeys" :key="key">
-      <v-select v-bind:label="key" :items="duplicatedMap[key]"></v-select>
+    <v-flex xs12 v-if="showDuplicated">
+      <v-btn v-for="(value, key) in duplicated" :key="key" @click="onClickDuplicated(key)">{{ key }}</v-btn>
     </v-flex>
-    <v-flex xs12>
-      <div id="mermaid" class="mermaid">{{ input }}</div>
+    <v-flex xs12 v-if="showSelected" transition="slide-x-transition">
+      <v-btn v-for="recipe in duplicated[selectedKey]" :key="recipe.name" @click="onClickSelected(recipe)">{{ recipe.name }}</v-btn>
+    </v-flex>
+    <v-flex xs10>
+      <div id="mermaid" class="mermaid">{{ mermaidCode }}</div>
+    </v-flex>
+    <v-flex xs2>
+      <p>Priority Recipes</p>
+      <v-card v-for="priority in priorities" :key="priority.name" >
+        <v-card-text>{{ priority.name }}</v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -36,14 +45,14 @@ import locales from '~/assets/locales.json'
 export default {
   data() {
     return {
-      input: '',
+      mermaidCode: '',
       product: null,
       amount: null,
-      hasDuplicated: false,
+      showDuplicated: false,
       duplicated: null,
-      duplicatedKeys: null,
-      duplicatedMap: null,
-      targetDuplicated: null,
+      selectedKey: null,
+      showSelected: false,
+      priorities: [],
       rules: {
         required: (v) => !!v || 'required',
         number: (v) => !isNaN(v) || 'not a number'
@@ -75,22 +84,24 @@ export default {
       let duplicated = {}
       let result = flow.generate(parsedProduct, this.amount, true, duplicated)
       this.duplicated = duplicated
-      this.duplicatedKeys = Object.keys(this.duplicated)
-      this.duplicatedMap = {}
-      for (let key of this.duplicatedKeys) {
-        this.duplicatedMap[key] = duplicated[key].map(v => v.name)
-      }
-      this.hasDuplicated = Object.keys(this.duplicated).length > 0
-      console.log(this)
+      this.showDuplicated = Object.keys(this.duplicated).length > 0
       let code = converter.convert(result).join('\n')
-      this.input = code
+      this.mermaidCode = code
       container.removeAttribute('data-processed')
       container.innerHTML = code
       mermaid.parse(code)
       mermaid.init(null, container)
     },
-    onClickDuplicated(event) {
-      console.log(event)
+    onClickDuplicated(key) {
+      this.showSelected = false
+      this.selectedKey = key
+      this.showSelected = true
+    },
+    onClickSelected(recipe) {
+      this.priorities.push(recipe)
+      delete this.duplicated[this.selectedKey]
+      this.selectedKey = null
+      this.showSelected = false
     }
   }
 }
@@ -113,5 +124,8 @@ export default {
   stroke: #ffffff !important;
   stroke-width: 1.5px !important;
   */
+}
+.card {
+  margin: 4px;
 }
 </style>
