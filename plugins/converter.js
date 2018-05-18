@@ -64,7 +64,7 @@ class Converter {
       let itemLabels = srcNode.items.map(
         item => `${this.getResource(item.name)}: ${item.amount}`
       )
-      let arrowText = itemLabels.join('\n')
+      let arrowText = `"${itemLabels.join(', ')}"`
 
       // dst
       // 出力先が無い場合は注記する
