@@ -23,7 +23,7 @@
         v-for="(value, key) in duplicated"
         :key="key"
         @click="onClickDuplicated(key)"
-        class="no-transform">{{ key }}</v-btn>
+        class="no-transform">{{ converter.getResource(key) }}</v-btn>
     </v-flex>
     <v-flex xs12 v-if="showRecipe">
       <v-container fluid grid-list-md>
@@ -33,7 +33,7 @@
                  v-for="recipe in duplicated[selectedKey]"
                  :key="recipe.name">
             <v-card>
-              <v-card-title>{{ recipe.name }}</v-card-title>
+              <v-card-title>{{ converter.getResource(recipe.name) }}</v-card-title>
               <v-card-text>
                 <p v-for="text in recipeText[recipe.name]" :key="text">{{ text }}</p>
               </v-card-text>
@@ -54,6 +54,7 @@
     <v-flex xs2>
       <p>Priority Recipes</p>
       <v-card v-for="priority in priorities" :key="priority.name" >
+        <v-card-title>{{ converter.getResource(priority.name) }}</v-card-title>
         <v-card-text>
           <p v-for="text in getRecipeText(priority)" :key="text">{{ text }}</p>
         </v-card-text>
@@ -77,6 +78,8 @@ import locales from '~/assets/locales.json'
 export default {
   data() {
     return {
+      converter: null,
+      flow: null,
       mermaidCode: '',
       product: null,
       amount: null,
@@ -94,6 +97,8 @@ export default {
   },
 
   mounted() {
+    this.converter = new Converter(locales)
+    this.flow = new FlowGenerator(Object.values(recipes))
     let container = document.getElementById('mermaid')
     container.setAttribute('data-processed', true)
   },
@@ -104,10 +109,9 @@ export default {
       if (!this.$refs.product.valid || !this.$refs.amount.valid) {
         return
       }
-      let converter = new Converter(locales)
       let parsedProduct
       try {
-        parsedProduct = converter.parseResource(this.product)
+        parsedProduct = this.converter.parseResource(this.product)
       } catch (e) {
         this.$refs.product.rules.push(v => e.message)
         this.$refs.product.validate()
@@ -116,15 +120,14 @@ export default {
       this.$refs.product.validate()
 
       // generate flow
-      let flow = new FlowGenerator(Object.values(recipes))
       let duplicated = {}
       let priorities = this.priorities.map(recipe => recipe.name)
-      let result = flow.generate(parsedProduct, this.amount, true, duplicated, priorities)
+      let result = this.flow.generate(parsedProduct, this.amount, true, duplicated, priorities)
       this.duplicated = duplicated
       this.showDuplicated = Object.keys(this.duplicated).length > 0
 
       // convert to mermaid code
-      let code = converter.convert(result).join('\n')
+      let code = this.converter.convert(result).join('\n')
       this.mermaidCode = code
 
       // render
@@ -159,9 +162,9 @@ export default {
 
     getRecipeText(recipe) {
       let text = []
-      let inText = recipe.ingredients.map(ing => `${ing.name}(${ing.amount})`)
+      let inText = recipe.ingredients.map(ing => `${this.converter.getResource(ing.name)}(${ing.amount})`)
       text.push(`in: ${inText.join(', ')}`)
-      let outText = recipe.products.map(pro => `${pro.name}(${pro.amount})`)
+      let outText = recipe.products.map(pro => `${this.converter.getResource(pro.name)}(${pro.amount})`)
       text.push(`out: ${outText.join(', ')}`)
       text.push(`time: ${recipe.energy}`)
       return text
