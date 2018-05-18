@@ -25,7 +25,7 @@
         @click="onClickDuplicated(key)"
         class="no-transform">{{ key }}</v-btn>
     </v-flex>
-    <v-flex xs12 v-if="showSelected">
+    <v-flex xs12 v-if="showRecipe">
       <v-container fluid grid-list-md>
         <v-layout row wrap>
           <v-flex
@@ -34,7 +34,9 @@
                  :key="recipe.name">
             <v-card>
               <v-card-title>{{ recipe.name }}</v-card-title>
-              <v-card-text>This is text.</v-card-text>
+              <v-card-text>
+                <p v-for="text in recipeText[recipe.name]" :key="text">{{ text }}</p>
+              </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn icon small @click="onClickAdd(recipe)">
@@ -52,7 +54,9 @@
     <v-flex xs2>
       <p>Priority Recipes</p>
       <v-card v-for="priority in priorities" :key="priority.name" >
-        <v-card-text>{{ priority.name }}</v-card-text>
+        <v-card-text>
+          <p v-for="text in getRecipeText(priority)" :key="text">{{ text }}</p>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn icon small @click="onClickRemove(priority)">
@@ -79,8 +83,9 @@ export default {
       showDuplicated: false,
       duplicated: null,
       selectedKey: null,
-      showSelected: false,
+      showRecipe: false,
       priorities: [],
+      recipeText: {},
       rules: {
         required: v => !!v || 'required',
         number: v => !isNaN(v) || 'not a number'
@@ -131,20 +136,35 @@ export default {
     },
 
     onClickDuplicated(key) {
-      this.showSelected = false
+      this.showRecipe = false
+      for (let recipe of this.duplicated[key]) {
+        if (!this.recipeText[recipe.name]) {
+          this.recipeText[recipe.name] = this.getRecipeText(recipe)
+        }
+      }
       this.selectedKey = key
-      this.showSelected = true
+      this.showRecipe = true
     },
 
     onClickAdd(recipe) {
       this.priorities.push(recipe)
       delete this.duplicated[this.selectedKey]
       this.selectedKey = null
-      this.showSelected = false
+      this.showRecipe = false
     },
 
     onClickRemove(recipe) {
       this.priorities = this.priorities.filter(p => p.name !== recipe.name)
+    },
+
+    getRecipeText(recipe) {
+      let text = []
+      let inText = recipe.ingredients.map(ing => `${ing.name}(${ing.amount})`)
+      text.push(`in: ${inText.join(', ')}`)
+      let outText = recipe.products.map(pro => `${pro.name}(${pro.amount})`)
+      text.push(`out: ${outText.join(', ')}`)
+      text.push(`time: ${recipe.energy}`)
+      return text
     }
   }
 }
@@ -170,6 +190,16 @@ export default {
 }
 .card {
   margin: 4px;
+}
+.card p {
+  margin-bottom: 1px;
+}
+.card__title {
+  padding: 5px 8px 5px 8px;
+  font-size: 16px;
+}
+.card__text {
+  padding: 5px 16px 5px 16px;
 }
 .no-transform {
   text-transform: none !important;
