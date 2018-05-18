@@ -25,11 +25,26 @@
         @click="onClickDuplicated(key)"
         class="no-transform">{{ key }}</v-btn>
     </v-flex>
-    <v-flex xs12 v-if="showSelected" transition="slide-x-transition">
-      <v-btn
-        v-for="recipe in duplicated[selectedKey]"
-        :key="recipe.name"
-        @click="onClickSelected(recipe)">{{ recipe.name }}</v-btn>
+    <v-flex xs12 v-if="showSelected">
+      <v-container fluid grid-list-md>
+        <v-layout row wrap>
+          <v-flex
+            xs3
+                 v-for="recipe in duplicated[selectedKey]"
+                 :key="recipe.name">
+            <v-card>
+              <v-card-title>{{ recipe.name }}</v-card-title>
+              <v-card-text>This is text.</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn icon small @click="onClickAdd(recipe)">
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-flex>
     <v-flex xs10>
       <div id="mermaid" class="mermaid">{{ mermaidCode }}</div>
@@ -38,9 +53,12 @@
       <p>Priority Recipes</p>
       <v-card v-for="priority in priorities" :key="priority.name" >
         <v-card-text>{{ priority.name }}</v-card-text>
-        <v-btn icon small>
-          <v-icon>clear</v-icon>
-        </v-btn>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn icon small @click="onClickRemove(priority)">
+            <v-icon>clear</v-icon>
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-flex>
   </v-layout>
@@ -118,11 +136,15 @@ export default {
       this.showSelected = true
     },
 
-    onClickSelected(recipe) {
+    onClickAdd(recipe) {
       this.priorities.push(recipe)
       delete this.duplicated[this.selectedKey]
       this.selectedKey = null
       this.showSelected = false
+    },
+
+    onClickRemove(recipe) {
+      this.priorities = this.priorities.filter(p => p.name !== recipe.name)
     }
   }
 }
