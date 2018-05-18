@@ -19,10 +19,17 @@
       <v-btn @click="onClickOK">ok</v-btn>
     </v-flex>
     <v-flex xs12 v-if="showDuplicated">
-      <v-btn v-for="(value, key) in duplicated" :key="key" @click="onClickDuplicated(key)">{{ key }}</v-btn>
+      <v-btn
+        v-for="(value, key) in duplicated"
+        :key="key"
+        @click="onClickDuplicated(key)"
+        class="no-transform">{{ key }}</v-btn>
     </v-flex>
     <v-flex xs12 v-if="showSelected" transition="slide-x-transition">
-      <v-btn v-for="recipe in duplicated[selectedKey]" :key="recipe.name" @click="onClickSelected(recipe)">{{ recipe.name }}</v-btn>
+      <v-btn
+        v-for="recipe in duplicated[selectedKey]"
+        :key="recipe.name"
+        @click="onClickSelected(recipe)">{{ recipe.name }}</v-btn>
     </v-flex>
     <v-flex xs10>
       <div id="mermaid" class="mermaid">{{ mermaidCode }}</div>
@@ -31,6 +38,9 @@
       <p>Priority Recipes</p>
       <v-card v-for="priority in priorities" :key="priority.name" >
         <v-card-text>{{ priority.name }}</v-card-text>
+        <v-btn icon small>
+          <v-icon>clear</v-icon>
+        </v-btn>
       </v-card>
     </v-flex>
   </v-layout>
@@ -138,5 +148,8 @@ export default {
 }
 .card {
   margin: 4px;
+}
+.no-transform {
+  text-transform: none !important;
 }
 </style>
