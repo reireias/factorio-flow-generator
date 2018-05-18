@@ -191,6 +191,9 @@ export default {
   stroke-width: 1.5px !important;
   */
 }
+.mermaid svg {
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .5));
+}
 .card {
   margin: 4px;
 }
