@@ -16,7 +16,7 @@
         ref="amount"></v-text-field>
     </v-flex>
     <v-flex xs2 offset-xs1 offset-xs2>
-      <v-btn @click="onClickButton">ok</v-btn>
+      <v-btn @click="onClickOK">ok</v-btn>
     </v-flex>
     <v-flex xs12 v-if="showDuplicated">
       <v-btn v-for="(value, key) in duplicated" :key="key" @click="onClickDuplicated(key)">{{ key }}</v-btn>
@@ -54,17 +54,20 @@ export default {
       showSelected: false,
       priorities: [],
       rules: {
-        required: (v) => !!v || 'required',
-        number: (v) => !isNaN(v) || 'not a number'
+        required: v => !!v || 'required',
+        number: v => !isNaN(v) || 'not a number'
       }
     }
   },
+
   mounted() {
     let container = document.getElementById('mermaid')
     container.setAttribute('data-processed', true)
   },
+
   methods: {
-    onClickButton() {
+    onClickOK() {
+      // check
       if (!this.$refs.product.valid || !this.$refs.amount.valid) {
         return
       }
@@ -73,30 +76,38 @@ export default {
       try {
         parsedProduct = converter.parseResource(this.product)
       } catch (e) {
-        this.$refs.product.rules.push((v) => e.message)
+        this.$refs.product.rules.push(v => e.message)
         this.$refs.product.validate()
         return
       }
       this.$refs.product.validate()
-      let container = document.getElementById('mermaid')
 
+      // generate flow
       let flow = new FlowGenerator(Object.values(recipes))
       let duplicated = {}
-      let result = flow.generate(parsedProduct, this.amount, true, duplicated)
+      let priorities = this.priorities.map(recipe => recipe.name)
+      let result = flow.generate(parsedProduct, this.amount, true, duplicated, priorities)
       this.duplicated = duplicated
       this.showDuplicated = Object.keys(this.duplicated).length > 0
+
+      // convert to mermaid code
       let code = converter.convert(result).join('\n')
       this.mermaidCode = code
+
+      // render
+      let container = document.getElementById('mermaid')
       container.removeAttribute('data-processed')
       container.innerHTML = code
       mermaid.parse(code)
       mermaid.init(null, container)
     },
+
     onClickDuplicated(key) {
       this.showSelected = false
       this.selectedKey = key
       this.showSelected = true
     },
+
     onClickSelected(recipe) {
       this.priorities.push(recipe)
       delete this.duplicated[this.selectedKey]
